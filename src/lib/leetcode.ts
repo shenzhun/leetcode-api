@@ -25,49 +25,18 @@ class Leetcode {
         };
     }
 
-    static async build(username: string, password: string, endpoint: EndPoint): Promise<Leetcode> {
+    static async build(username: string, password: string,  endpoint: EndPoint, session: string, csrftoken: string): Promise<Leetcode> {
         Helper.switchEndPoint(endpoint);
-        const credit: Credit = await this.login(username, password);
+        const credit: Credit = await this.login(session, csrftoken);
         Helper.setCredit(credit);
         return new Leetcode(credit);
     }
 
-    static async login(username: string, password: string): Promise<Credit> {
-        // got login token first
-        const response = await Helper.HttpRequest({
-            url: Leetcode.uris.login,
-            resolveWithFullResponse: true,
-        });
-        const token: string = Helper.parseCookie(response.headers['set-cookie'], "csrftoken");
-        // Leetcode CN return null here, but it's does not matter
-        let credit: Credit = {
-            csrfToken: token
+    static async login(session: string, csrfToken: string): Promise<Credit> {
+        const credit = {
+            session: session,
+            csrfToken: csrfToken,
         };
-        Helper.setCredit(credit);
-
-        // then login
-        try {
-            const _response = await Helper.HttpRequest({
-                method: "POST",
-                url: Leetcode.uris.login,
-                form: {
-                    csrfmiddlewaretoken: token,
-                    login: username,
-                    password: password,
-                },
-                resolveWithFullResponse: true,
-            });
-            const session = Helper.parseCookie(_response.headers['set-cookie'], "LEETCODE_SESSION");
-            const csrfToken = Helper.parseCookie(_response.headers['set-cookie'], "csrftoken");
-            credit = {
-                session: session,
-                csrfToken: csrfToken,
-            };
-        } catch (e) {
-            if (e instanceof StatusCodeError) {
-                throw new Error("Login Fail");
-            }
-        }
         return credit;
     }
 

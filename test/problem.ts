@@ -15,6 +15,8 @@ describe("# Problem", async function () {
             process.env.LEETCODE_USERNAME || "",
             process.env.LEETCODE_PASSWORD || "",
             process.env.LEETCODE_ENDPOINT === "CN" ? EndPoint.CN : EndPoint.US,
+            process.env.LEETCODE_SESSION || "",
+            process.env.CSRF_TOKEN ||"",
         );
         await problem.detail();
     });

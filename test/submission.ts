@@ -15,6 +15,8 @@ describe("# Submission", async function () {
             process.env.LEETCODE_USERNAME || "",
             process.env.LEETCODE_PASSWORD || "",
             process.env.LEETCODE_ENDPOINT === "CN" ? EndPoint.CN : EndPoint.US,
+            process.env.LEETCODE_SESSION || "",
+            process.env.CSRF_TOKEN ||"",
         );
         const problems: Array<Problem> = await leetcode.getAllProblems();
         const acceptedProblems: Array<Problem> = problems.filter((p: Problem) => {
